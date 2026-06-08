@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / local configs
+config.local.json
+secrets.json
+.env
+*.env
+wifi.json
+mqtt-secrets.json
+
+# Build / temp
+dist/
+build/
+*.zip
+*.tar.gz
+tmp/
+temp/
+.cache/
+
+# Logs
+*.log
+serial.log
+
+# MicroPython local artifacts
+.mpy-cross/
+*.mpy
+*.uf2
+*.bin
