@@ -1,0 +1,82 @@
+{
+  "system": {
+    "event_log_size": 30,
+    "telegram_removed": true,
+    "name": "Smart Irrigation",
+    "ui_theme": "dark",
+    "max_events": 30,
+    "setup_done": false,
+    "version": "3.8.0"
+  },
+  "safety": {
+    "mqtt_publish_while_pump_running": false,
+    "pump_start_delay_ms": 150,
+    "notify_on_manual_pump": false,
+    "auto_reconnect_wifi": true,
+    "pump_max_manual_seconds": 30,
+    "restart_webserver_on_wifi_error": true,
+    "network_pause_after_pump_seconds": 6,
+    "notify_on_auto_pump": true
+  },
+  "mqtt": {
+    "client_id": "smart-irrigation-esp32",
+    "port": 1883,
+    "base_topic": "smart_irrigation",
+    "commands_enabled": true,
+    "enabled": true,
+    "discovery_prefix": "homeassistant",
+    "homeassistant_discovery": true,
+    "publish_interval_seconds": 60,
+    "host": "192.168.178.183",
+    "password": "ichundich102",
+    "username": "mqtt_esp32",
+    "command_poll_interval_ms": 500
+  },
+  "wifi": {
+    "password": "50517880555497667758",
+    "connect_timeout_seconds": 20,
+    "connect_attempts": 3,
+    "hostname": "smart-irrigation",
+    "fallback_ap_on_fail": true,
+    "setup_ap_password": "",
+    "setup_ap_channel": 1,
+    "setup_ap_open": true,
+    "setup_ap_ssid": "Irrigation-Setup",
+    "ssid": "FRITZ!Box 7560 ME"
+  },
+  "channels": [
+    {
+      "dry_adc": 3500,
+      "pump_active_low": false,
+      "cooldown_minutes": 60,
+      "duration": 5,
+      "pump_pin": 27,
+      "id": 0,
+      "name": "Kanal 1",
+      "sensor_min_adc": 50,
+      "enabled": true,
+      "last_watered": 12,
+      "sensor_max_adc": 4050,
+      "wet_adc": 1500,
+      "max_pump_seconds": 30,
+      "threshold": 40,
+      "auto_mode": true,
+      "sensor_pin": 34,
+      "total_waterings": 5,
+      "min_interval_minutes": 60,
+      "manual_allowed": true,
+      "sensor_stuck_delta": 3
+    }
+  ],
+  "telegram": {
+    "mode": "home_assistant_mqtt_proxy",
+    "direct_on_esp32": false,
+    "enabled_on_esp32": false
+  },
+  "ota": {
+    "enabled": true,
+    "branch": "main",
+    "base_path": "src",
+    "github_repo": "JannWdl/ESP32-Bodenfeuchtigkeit-HA"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "version": "3.9.0",
+  "name": "ha-telegram-docs-release",
+  "notes": "Home Assistant Telegram proxy modernisiert, target-Parameter entfernt, Status-Entities korrigiert, Doku/Release Notes/Tutorials für GitHub ergänzt.",
+  "mqtt_interval_configurable": true,
+  "telegram": "home_assistant_mqtt_proxy_only",
+  "telegram_direct_on_esp32": false,
+  "home_assistant_package": true,
+  "hacs_template": true,
+  "ram_optimized": true,
+  "mqtt_base_topic": "smart_irrigation",
+  "commands": {
+    "pump": "smart_irrigation/channel/0/command/pump",
+    "auto": "smart_irrigation/channel/0/command/auto",
+    "stop": "smart_irrigation/system/command/stop",
+    "discovery": "smart_irrigation/system/command/discovery",
+    "mqtt_interval": "smart_irrigation/system/command/mqtt_interval"
+  }
+}

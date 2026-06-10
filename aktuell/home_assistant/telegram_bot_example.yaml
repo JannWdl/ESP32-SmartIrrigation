@@ -1,0 +1,9 @@
+# Telegram Bot Beispiel für /config/configuration.yaml
+# Token und Chat-ID in /config/secrets.yaml ablegen.
+# Wichtig ab HA 2026.x: Kein altes notify: - platform: telegram mehr verwenden.
+
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_bot_token
+    allowed_chat_ids:
+      - !secret telegram_chat_id

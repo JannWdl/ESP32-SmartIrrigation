@@ -1,0 +1,121 @@
+  - alias: ESP Smart Irrigation - Telegram Commands
+    id: esp_smart_irrigation_telegram_commands
+    mode: queued
+    max: 10
+    trigger:
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /status
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /pump5
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /pump10
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /stop
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /auto_on
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /auto_off
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: /discovery
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/status' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_status_telegram
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/pump5' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_pump_run_5
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: !secret telegram_chat_id
+                  message: "💧 Pumpe läuft 5 Sekunden."
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/pump10' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_pump_run_10
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: !secret telegram_chat_id
+                  message: "💧 Pumpe läuft 10 Sekunden."
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/stop' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_stop
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: !secret telegram_chat_id
+                  message: "🛑 Not-Aus gesendet."
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/auto_on' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_auto_on
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: !secret telegram_chat_id
+                  message: "⚙️ Automatik eingeschaltet."
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/auto_off' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_auto_off
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: !secret telegram_chat_id
+                  message: "⚙️ Automatik ausgeschaltet."
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == '/discovery' }}"
+            sequence:
+              - service: script.esp_smart_irrigation_discovery
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: !secret telegram_chat_id
+                  message: "🔎 MQTT Discovery neu angefordert."
+
+  - alias: ESP Smart Irrigation - Warnung Boden trocken
+    id: esp_smart_irrigation_warn_dry
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.smart_irrigation_kanal_1_feuchtigkeit
+        below: 25
+        for: "00:10:00"
+    action:
+      - service: telegram_bot.send_message
+        data:
+          chat_id: !secret telegram_chat_id
+          message: "⚠️ Bodenfeuchtigkeit niedrig: {{ states('sensor.smart_irrigation_kanal_1_feuchtigkeit') }} %."
+
+  - alias: ESP Smart Irrigation - Pumpe läuft Benachrichtigung
+    id: esp_smart_irrigation_pump_notify
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.smart_irrigation_kanal_1_pumpe
+        to: "on"
+    action:
+      - service: telegram_bot.send_message
+        data:
+          chat_id: !secret telegram_chat_id
+          message: "💧 Pumpe wurde gestartet."

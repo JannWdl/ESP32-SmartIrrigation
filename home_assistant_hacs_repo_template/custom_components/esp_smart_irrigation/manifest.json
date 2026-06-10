@@ -1,0 +1,11 @@
+{
+  "domain": "esp_smart_irrigation",
+  "name": "ESP Smart Irrigation",
+  "codeowners": ["@JannWdl"],
+  "config_flow": true,
+  "dependencies": ["mqtt"],
+  "documentation": "https://github.com/JannWdl/ESP32-SmartIrrigation",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/JannWdl/ESP32-SmartIrrigation/issues",
+  "version": "0.1.0"
+}

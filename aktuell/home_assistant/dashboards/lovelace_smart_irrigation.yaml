@@ -1,0 +1,61 @@
+title: Smart Irrigation
+views:
+  - title: Bewässerung
+    path: irrigation
+    icon: mdi:sprinkler-variant
+    cards:
+      - type: entities
+        title: ESP Smart Irrigation
+        entities:
+          - entity: sensor.kanal_1_feuchtigkeit
+            name: Bodenfeuchtigkeit
+          - entity: sensor.kanal_1_adc
+            name: ADC Rohwert
+          - entity: binary_sensor.kanal_1_pumpe
+            name: Pumpe
+          - entity: binary_sensor.kanal_1_automatik
+            name: Automatik
+          - entity: sensor.kanal_1_cooldown
+            name: Cooldown
+          - entity: number.mqtt_updateintervall
+            name: MQTT Updateintervall
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Pumpe 5s
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: mqtt.publish
+              data:
+                topic: smart_irrigation/channel/0/command/pump
+                payload: RUN:5
+          - type: button
+            name: Pumpe 10s
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: mqtt.publish
+              data:
+                topic: smart_irrigation/channel/0/command/pump
+                payload: RUN:10
+          - type: button
+            name: Automatik an
+            icon: mdi:autorenew
+            tap_action:
+              action: call-service
+              service: mqtt.publish
+              data:
+                topic: smart_irrigation/channel/0/command/auto
+                payload: 'ON'
+          - type: button
+            name: Not-Aus
+            icon: mdi:stop-circle
+            tap_action:
+              action: call-service
+              service: mqtt.publish
+              data:
+                topic: smart_irrigation/system/command/stop
+                payload: STOP

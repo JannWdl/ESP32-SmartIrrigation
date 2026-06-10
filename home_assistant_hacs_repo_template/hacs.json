@@ -1,0 +1,6 @@
+{
+  "name": "ESP Smart Irrigation",
+  "render_readme": true,
+  "domains": ["esp_smart_irrigation"],
+  "homeassistant": "2025.1.0"
+}

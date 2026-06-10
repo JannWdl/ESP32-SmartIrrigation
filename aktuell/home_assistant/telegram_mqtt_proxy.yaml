@@ -1,0 +1,111 @@
+# Home Assistant Automation: Telegram -> MQTT -> ESP32 Smart Irrigation
+# Version: 3.9.0
+#
+# Diese Datei ist die Einzel-Automation-Variante.
+# Empfohlen ist normalerweise das Paket: packages/esp_smart_irrigation.yaml
+#
+# Voraussetzung:
+# - Telegram Bot Integration in Home Assistant ist eingerichtet.
+# - MQTT Integration in Home Assistant ist eingerichtet.
+# - ESP32 MQTT base_topic ist smart_irrigation.
+#
+# Befehle im Telegram-Chat:
+# /status, /pump5, /pump10, /stop, /auto_on, /auto_off, /discovery
+
+alias: Smart Irrigation Telegram MQTT Proxy
+id: smart_irrigation_telegram_mqtt_proxy
+mode: queued
+trigger:
+  - platform: event
+    event_type: telegram_command
+
+action:
+  - choose:
+      - conditions: "{{ trigger.event.data.command == '/status' }}"
+        sequence:
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: |
+                🌱 Smart Irrigation Status
+
+                Bodenfeuchtigkeit: {{ states('sensor.smart_irrigation_kanal_1_feuchtigkeit') }} %
+                ADC: {{ states('sensor.smart_irrigation_kanal_1_adc') }}
+
+                Pumpe: {% if is_state('binary_sensor.smart_irrigation_kanal_1_pumpe', 'on') %}AN{% else %}AUS{% endif %}
+                Automatik: {% if is_state('binary_sensor.smart_irrigation_kanal_1_automatik', 'on') %}AN{% else %}AUS{% endif %}
+
+                Cooldown: {{ states('sensor.smart_irrigation_kanal_1_cooldown') }} s
+                MQTT Update: {{ states('number.smart_irrigation_mqtt_updateintervall') }} s
+
+      - conditions: "{{ trigger.event.data.command == '/pump5' }}"
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: smart_irrigation/channel/0/command/pump
+              payload: "RUN:5"
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: "💧 Pumpe 5 Sekunden gestartet."
+
+      - conditions: "{{ trigger.event.data.command == '/pump10' }}"
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: smart_irrigation/channel/0/command/pump
+              payload: "RUN:10"
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: "💧 Pumpe 10 Sekunden gestartet."
+
+      - conditions: "{{ trigger.event.data.command == '/stop' }}"
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: smart_irrigation/system/command/stop
+              payload: "STOP"
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: "🛑 Not-Aus gesendet."
+
+      - conditions: "{{ trigger.event.data.command == '/auto_on' }}"
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: smart_irrigation/channel/0/command/auto
+              payload: "ON"
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: "⚙️ Automatik eingeschaltet."
+
+      - conditions: "{{ trigger.event.data.command == '/auto_off' }}"
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: smart_irrigation/channel/0/command/auto
+              payload: "OFF"
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: "⚙️ Automatik ausgeschaltet."
+
+      - conditions: "{{ trigger.event.data.command == '/discovery' }}"
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: smart_irrigation/system/command/discovery
+              payload: "DISCOVERY"
+          - service: telegram_bot.send_message
+            data:
+              chat_id: "{{ trigger.event.data.chat_id }}"
+              message: "🔎 MQTT Discovery neu angefordert."
+
+    default:
+      - service: telegram_bot.send_message
+        data:
+          chat_id: "{{ trigger.event.data.chat_id }}"
+          message: "Unbekannter Befehl. Nutze /status, /pump5, /pump10, /stop, /auto_on, /auto_off oder /discovery."
