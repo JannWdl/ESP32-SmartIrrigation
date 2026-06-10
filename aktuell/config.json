@@ -27,7 +27,7 @@
     "discovery_prefix": "homeassistant",
     "homeassistant_discovery": true,
     "publish_interval_seconds": 60,
-    "host": "192.168.178.183",
+    "host": "fuck_you",
     "password": "ichundich102",
     "username": "mqtt_esp32",
     "command_poll_interval_ms": 500
