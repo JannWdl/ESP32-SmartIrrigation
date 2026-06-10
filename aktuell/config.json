@@ -33,7 +33,7 @@
     "command_poll_interval_ms": 500
   },
   "wifi": {
-    "password": "50517880555497667758",
+    "password": "",
     "connect_timeout_seconds": 20,
     "connect_attempts": 3,
     "hostname": "smart-irrigation",
@@ -42,7 +42,7 @@
     "setup_ap_channel": 1,
     "setup_ap_open": true,
     "setup_ap_ssid": "Irrigation-Setup",
-    "ssid": "FRITZ!Box 7560 ME"
+    "ssid": ""
   },
   "channels": [
     {
