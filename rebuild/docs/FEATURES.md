@@ -4,7 +4,8 @@
 |---|---|
 | Grundlage | MicroPython, gesamte Bewässerung auf dem ESP |
 | Board | diymore ESP32-NodeMCU / ESP-WROOM-32, USB-C / CH340 (Produktbild) |
-| Hardware | 2 Pflanzen, je Sensor/Pumpe; 5 V; Relaislogik noch unbekannt |
+| Hardware | 2 Pflanzen, je Sensor/Pumpe; 5-V-Pumpen |
+| Relais | AYWHP 3-V-Einkanalmodule, High-Level-Trigger laut Produktbild; aktive HIGH-Vorbelegung |
 | Sensoren | Kapazitiv analog; gemeinsamer Tank mit HC-SR04 |
 | Automatik | Nur Bodenfeuchtigkeit; Portionen mit Einwirkpause |
 | Pumpen | Immer nur eine gleichzeitig |
@@ -26,5 +27,5 @@
 | Updates | USB und WLAN |
 | Lokale Bedienung | Nur Browser, kein Display/Taster |
 
-Vor dem echten Anschluss noch nötig: Relaislogik, tatsächliche GPIO-Verdrahtung,
+Vor dem echten Anschluss noch nötig: Relaisversorgung und HIGH/LOW am tatsächlichen Modul prüfen, GPIO-Verdrahtung,
 Tankabstände/Litermesspunkte und Fördermengen.

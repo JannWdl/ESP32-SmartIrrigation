@@ -39,6 +39,41 @@ class Tests(unittest.TestCase):
         self.c.now=now
         for _ in range(3): self.c.tank.update(distance,now)
         for ch in self.cfg['channels']: self.c.sample(ch['id'],raw,now)
+    def test_high_trigger_default_stays_unconfirmed(self):
+        cfg=defaults()
+        for ch in cfg['channels']:
+            self.assertIs(ch['active_low'],False)
+            self.assertFalse(ch['hardware_confirmed'])
+            self.assertFalse(ch['auto'])
+
+    def test_high_trigger_outputs_start_low_and_interlock(self):
+        import importlib.util
+        import types
+        from unittest.mock import patch
+        class Pin:
+            OUT=1; IN=0
+            def __init__(self,n,mode=None,value=0): self.n=n; self.level=value
+            def value(self,v=None):
+                if v is not None: self.level=v
+                return self.level
+        class ADC:
+            ATTN_11DB=3; WIDTH_12BIT=12
+            def __init__(self,p): pass
+            def atten(self,v): pass
+            def width(self,v): pass
+        machine=types.SimpleNamespace(Pin=Pin,ADC=ADC,time_pulse_us=lambda *a: -1)
+        filename=os.path.join(os.path.dirname(__file__),'..','firmware','hardware_v4.py')
+        spec=importlib.util.spec_from_file_location('hardware_test',filename)
+        module=importlib.util.module_from_spec(spec)
+        with patch.dict(sys.modules,{'machine':machine}): spec.loader.exec_module(module)
+        cfg=configured()
+        for ch in cfg['channels']: ch['active_low']=False
+        hw=module.Hardware(cfg)
+        self.assertEqual([p.value() for p in hw.pumps.values()],[0,0])
+        hw.on(0); self.assertEqual([p.value() for p in hw.pumps.values()],[1,0])
+        hw.on(1); self.assertEqual([p.value() for p in hw.pumps.values()],[0,1])
+        hw.all_off(); self.assertEqual([p.value() for p in hw.pumps.values()],[0,0])
+
     def test_unknown_channel_never_operates_first(self):
         with self.assertRaises(ValueError): self.c.start(42,10)
         self.assertIsNone(self.hw.running)

@@ -3,8 +3,10 @@
 Bekannt: zwei Kanäle, kapazitive analoge Sensoren, 5-V-Pumpen, Relais, HC-SR04,
 ein gemeinsamer Wasserbehälter. Board laut Produktbild: diymore ESP32-NodeMCU / ESP-WROOM-32
 mit USB-C und CH340. Vorbelegung Sensoren 34/35, Relais 27/26, Trigger 18, Echo 19.
-Unbekannt: LOW/HIGH-Relaislogik,
-Behälterform/-maße und Pumpenfördermengen. **Keine automatische Übernahme alter GPIOs.**
+Relais laut Produktbild: AYWHP 3-V-Einkanalmodule (Amazon ASIN B0DQL4SVN6),
+mit High-Level-Trigger. GPIO HIGH = ein, LOW = aus. Die Vorbelegung ist `active_low: false`;
+`hardware_confirmed` bleibt bis zum Test false.
+Noch zu prüfen: tatsächliche Modulversorgung/Schaltlogik, Behältermaße und Fördermengen. **Keine automatische Übernahme alter GPIOs.**
 
 - HC-SR04 benötigt laut Datenblatt 5 V. Echo nicht direkt mit einem ESP32-Eingang verbinden:
   Pegelwandlung oder geeigneten Spannungsteiler auf 3,3 V einsetzen. Sensor/ESP gemeinsame Masse.
@@ -12,6 +14,9 @@ Behälterform/-maße und Pumpenfördermengen. **Keine automatische Übernahme al
   Datenblatt: https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf
 - Pumpe aus einer passend dimensionierten 5-V-Versorgung über Relaiskontakte versorgen,
   nicht aus einem GPIO. Bei DC-Pumpen Schutzbeschaltung und Entstörung berücksichtigen.
+- Das Angebot nennt ein 3-V-Relaismodul, nicht nur einen 3,3-V-kompatiblen Eingang.
+  Modulversorgung und Anschlüsse anhand der tatsächlichen Beschriftung prüfen;
+  die 5-V-Pumpenversorgung wird separat über die Relaiskontakte geschaltet.
 - Relaislogik ohne angeschlossene Pumpenversorgung messen und bestätigen.
   Externer Pull-up/Pull-down muss das Relais auch vor Firmwarestart und beim Reset ausschalten.
 - Die Software bietet eine konservative GPIO-Auswahl für ESP32/WROOM und ESP32-S3.

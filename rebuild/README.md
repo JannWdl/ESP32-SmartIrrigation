@@ -6,7 +6,9 @@ Die bisherige Version bleibt unter `aktuell/` erhalten. V4 startet mit einer neu
 Vereinbart: MicroPython, zwei kapazitive analoge Bodensensoren, zwei 5-V-Pumpen an Relais,
 ein gemeinsamer Tank mit HC-SR04, vollständige lokale Weboberfläche, optionale MQTT-Anbindung.
 Board anhand des Produktbildes: diymore ESP32-NodeMCU / ESP-WROOM-32, USB-C, CH340.
-Relaislogik noch unbekannt. Ohne deren Bestätigung bleiben Pumpenausgänge gesperrt.
+Relais laut Produktbild: AYWHP 3-V-Einkanalmodule mit High-Level-Trigger.
+Vorbelegung: HIGH = ein / LOW = aus (`active_low: false`).
+Bis zur Prüfung des tatsächlichen Moduls bleiben Pumpenausgänge gesperrt.
 Vorbelegung: Sensoren GPIO34/35, Relais GPIO27/26, HC-SR04 Trigger GPIO18 / Echo GPIO19.
 
 ## Funktionen

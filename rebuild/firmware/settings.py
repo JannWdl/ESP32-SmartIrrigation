@@ -5,7 +5,7 @@ VERSION = '4.0.0'
 
 def defaults():
     channel = lambda i: dict(id=i, name='Pflanze %d' % (i + 1), enabled=True,
-        sensor_pin=34+i, pump_pin=27-i, active_low=None, hardware_confirmed=False,
+        sensor_pin=34+i, pump_pin=27-i, active_low=False, hardware_confirmed=False,
         dry_adc=None, wet_adc=None, flow_ml_s=None, auto=False, threshold=35,
         hysteresis=5, portion_ml=10, soak_seconds=300, max_cycle_ml=50,
         max_day_ml=200, max_run_seconds=30, min_rise=2, profile='custom')
