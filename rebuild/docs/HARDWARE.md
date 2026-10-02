@@ -1,5 +1,7 @@
 # Hardware vor Freigabe prüfen
 
+Komplette Anschlussanleitung mit Schaltbildern: [VERKABELUNG.md](VERKABELUNG.md).
+
 Bekannt: zwei Kanäle, kapazitive analoge Sensoren, 5-V-Pumpen, Relais, HC-SR04,
 ein gemeinsamer Wasserbehälter. Board laut Produktbild: diymore ESP32-NodeMCU / ESP-WROOM-32
 mit USB-C und CH340. Vorbelegung Sensoren 34/35, Relais 27/26, Trigger 18, Echo 19.

@@ -11,6 +11,15 @@ Vorbelegung: HIGH = ein / LOW = aus (`active_low: false`).
 Bis zur Prüfung des tatsächlichen Moduls bleiben Pumpenausgänge gesperrt.
 Vorbelegung: Sensoren GPIO34/35, Relais GPIO27/26, HC-SR04 Trigger GPIO18 / Echo GPIO19.
 
+## Verkabelung
+
+[Anleitung mit Schaltbildern, allen Anschlusslisten und Ersttest](docs/VERKABELUNG.md)
+
+Der Plan umfasst getrennte Versorgungsschienen, gemeinsame Masse, Echo-Spannungsteiler,
+COM/NO-Pumpenkreise, Freilaufdioden und die Prüfung ohne laufende Pumpen.
+Netzteil/Sicherung/Leitungen anhand der tatsächlichen Pumpenströme auswählen;
+Relais-Modulversorgung und Bodensensor-Kompatibilität vor Anschluss bestätigen.
+
 ## Funktionen
 
 - Lokale Automatik nach Bodenfeuchtigkeit, auch ohne WLAN/MQTT/Home Assistant.
