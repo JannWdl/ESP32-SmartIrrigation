@@ -1,3 +1,5 @@
+> **V4-Neubau (Entwurf):** Die eigenständige Steuerung mit gemeinsamer Tanküberwachung und Einrichtungsassistent liegt unter [rebuild/](rebuild/README.md). Die bisherige Version unter `aktuell/` bleibt erhalten. Noch nicht auf dem tatsächlichen Board geprüft.
+
 # ESP32 Smart Irrigation
 
 ESP32/MicroPython-Bewässerungssteuerung mit Webinterface, MQTT, Home Assistant MQTT Discovery und Telegram-Steuerung über Home Assistant.

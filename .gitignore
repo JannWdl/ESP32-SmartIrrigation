@@ -24,3 +24,12 @@ Thumbs.db
 # Runtime state
 aktuell/history.bin
 aktuell/history.tmp
+
+# V4 runtime data / local USB backups
+rebuild/usb-backup/
+__pycache__/
+*.pyc
+rebuild/config.a
+rebuild/config.b
+rebuild/state.a
+rebuild/state.b
