@@ -4,7 +4,7 @@
 
 ESP32/MicroPython-Bewässerungssteuerung mit Webinterface, MQTT, Home Assistant MQTT Discovery und Telegram-Steuerung über Home Assistant.
 
-> Version: **v3.9.0**  
+> Version: **v3.9.0**<br>
 > Ziel: stabiler ESP32 ohne Telegram/HTTPS/TLS direkt auf dem Mikrocontroller.
 
 ## Kurzüberblick
