@@ -1,0 +1,28 @@
+name: Smart Irrigation v4
+on:
+  push:
+    paths: ['rebuild/**', '.github/workflows/irrigation-v4.yml']
+  pull_request:
+    paths: ['rebuild/**', '.github/workflows/irrigation-v4.yml']
+permissions:
+  contents: read
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: rebuild/package-lock.json
+      - run: python rebuild/tools/build_assets.py
+      - run: python rebuild/tools/make_bundle.py
+      - run: python -m compileall -q rebuild/firmware rebuild/tools aktuell
+      - run: python -m unittest discover -s rebuild/tests -v
+      - run: npm ci --prefix rebuild --ignore-scripts
+      - run: npm test --prefix rebuild
+      - run: python rebuild/tools/simulate.py

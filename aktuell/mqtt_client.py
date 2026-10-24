@@ -261,7 +261,7 @@ class MQTTService:
         self.subscriptions_done = True
         return True
 
-    def discovery(self, channels):
+    def discovery(self, channels, environment=None, water_level=None):
         if not self.enabled() or not self.cfg.get("mqtt", {}).get("homeassistant_discovery", True):
             return False
         base = self.base()
@@ -280,6 +280,35 @@ class MQTTService:
         rediscovery_cfg_topic = "{}/button/smart_irrigation/{}/config".format(pref, rediscovery_unique)
         rediscovery_payload = '{"name":"HA Discovery neu senden","unique_id":"%s","command_topic":"%s/system/command/discovery","payload_press":"DISCOVERY",%s}' % (rediscovery_unique, base, dev)
         ok = self.publish_abs(rediscovery_cfg_topic, rediscovery_payload, retain=True) and ok
+
+        if environment is None:
+            environment = self.cfg.get("environment", {})
+        if water_level is None:
+            water_level = self.cfg.get("water_level", {})
+
+        sensor_cfgs = []
+        if environment.get("enabled", False):
+            sensor_cfgs += [
+                ("sensor", "temperature", "Temperatur", "°C", "temperature", base + "/environment/temperature", "measurement"),
+                ("sensor", "humidity", "Luftfeuchtigkeit", "%", "humidity", base + "/environment/humidity", "measurement"),
+            ]
+        if water_level.get("enabled", False):
+            sensor_cfgs += [
+                ("sensor", "water_level", "Wasserstand", "%", "", base + "/water_level/percent", "measurement"),
+                ("sensor", "water_distance", "Wasser Abstand", "cm", "distance", base + "/water_level/distance_cm", "measurement"),
+            ]
+        for typ, key, label, unit, devclass, state_topic, state_class in sensor_cfgs:
+            unique = "smart_irrigation_{}".format(key)
+            cfg_topic = "{}/{}/smart_irrigation/{}/config".format(pref, typ, unique)
+            payload = '{"name":"%s","unique_id":"%s","state_topic":"%s","availability_topic":"%s/status","payload_available":"online","payload_not_available":"offline",%s' % (label, unique, state_topic, base, dev)
+            if unit:
+                payload += ',"unit_of_measurement":"{}"'.format(unit)
+            if devclass:
+                payload += ',"device_class":"{}"'.format(devclass)
+            if state_class:
+                payload += ',"state_class":"{}"'.format(state_class)
+            payload += "}"
+            ok = self.publish_abs(cfg_topic, payload, retain=True) and ok
 
         for ch in channels:
             cid = ch.get("id", 0)
@@ -329,7 +358,7 @@ class MQTTService:
         self.discovery_done = ok
         return ok
 
-    def publish_status(self, channels, irrigation_status=None, force=False):
+    def publish_status(self, channels, irrigation_status=None, force=False, environment=None, water_level=None):
         if not self.enabled():
             return False
         now = time.time()
@@ -341,7 +370,7 @@ class MQTTService:
             return False
 
         if not self.discovery_done:
-            self.discovery(channels)
+            self.discovery(channels, environment, water_level)
         if self.commands_enabled():
             try:
                 self.ensure_subscriptions()
@@ -354,6 +383,20 @@ class MQTTService:
         count += 1
         ok = self.publish("system/mqtt_interval", interval, retain=True) and ok
         count += 1
+
+        if environment and environment.get("enabled", False):
+            if environment.get("temperature") is not None:
+                ok = self.publish("environment/temperature", environment.get("temperature"), retain=True) and ok; count += 1
+            if environment.get("humidity") is not None:
+                ok = self.publish("environment/humidity", environment.get("humidity"), retain=True) and ok; count += 1
+            ok = self.publish("environment/error", environment.get("error", ""), retain=True) and ok; count += 1
+
+        if water_level and water_level.get("enabled", False):
+            if water_level.get("distance_cm") is not None:
+                ok = self.publish("water_level/distance_cm", water_level.get("distance_cm"), retain=True) and ok; count += 1
+            if water_level.get("level_percent") is not None:
+                ok = self.publish("water_level/percent", water_level.get("level_percent"), retain=True) and ok; count += 1
+            ok = self.publish("water_level/error", water_level.get("error", ""), retain=True) and ok; count += 1
 
         status_by_id = {}
         if irrigation_status:
@@ -417,7 +460,11 @@ class MQTTService:
             return True
 
         if topic == base + "/system/command/discovery" and p in ("DISCOVERY", "ON", "1", "TRUE"):
-            self.discovery(hardware_manager.status())
+            self.discovery(
+                hardware_manager.status(),
+                hardware_manager.environment_status(),
+                hardware_manager.water_level_status()
+            )
             self.last_command_result = "Discovery gesendet"
             return True
 

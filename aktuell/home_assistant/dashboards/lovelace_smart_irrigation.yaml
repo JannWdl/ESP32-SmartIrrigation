@@ -11,6 +11,14 @@ views:
             name: Bodenfeuchtigkeit
           - entity: sensor.kanal_1_adc
             name: ADC Rohwert
+          - entity: sensor.smart_irrigation_temperatur
+            name: Temperatur
+          - entity: sensor.smart_irrigation_luftfeuchtigkeit
+            name: Luftfeuchtigkeit
+          - entity: sensor.smart_irrigation_wasserstand
+            name: Wasserstand
+          - entity: sensor.smart_irrigation_wasser_abstand
+            name: Wasser-Abstand
           - entity: binary_sensor.kanal_1_pumpe
             name: Pumpe
           - entity: binary_sensor.kanal_1_automatik

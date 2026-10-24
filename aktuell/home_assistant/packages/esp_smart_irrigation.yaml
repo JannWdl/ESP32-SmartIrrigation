@@ -29,6 +29,10 @@ script:
 
             Bodenfeuchtigkeit: {{ states('sensor.smart_irrigation_kanal_1_feuchtigkeit') }} %
             ADC: {{ states('sensor.smart_irrigation_kanal_1_adc') }}
+            Temperatur: {{ states('sensor.smart_irrigation_temperatur') }} °C
+            Luftfeuchtigkeit: {{ states('sensor.smart_irrigation_luftfeuchtigkeit') }} %
+            Wasserstand: {{ states('sensor.smart_irrigation_wasserstand') }} %
+            Wasser-Abstand: {{ states('sensor.smart_irrigation_wasser_abstand') }} cm
 
             Pumpe: {% if is_state('binary_sensor.smart_irrigation_kanal_1_pumpe', 'on') %}AN{% else %}AUS{% endif %}
             Automatik: {% if is_state('binary_sensor.smart_irrigation_kanal_1_automatik', 'on') %}AN{% else %}AUS{% endif %}

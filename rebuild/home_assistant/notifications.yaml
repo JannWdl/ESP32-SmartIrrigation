@@ -1,0 +1,16 @@
+# In Home Assistant als Automation einfügen. Topic und Notify-Dienst anpassen.
+# MQTT Discovery legt Messwerte, Status und Bedienung automatisch an.
+alias: Smart Irrigation Warnungen
+triggers:
+  - trigger: mqtt
+    topic: smart_irrigation_v4/event
+conditions:
+  - condition: template
+    value_template: "{{ trigger.payload_json.kind == 'error' }}"
+actions:
+  - action: notify.mobile_app_DEIN_HANDY
+    data:
+      title: Bewässerung prüfen
+      message: "{{ trigger.payload_json.message }}"
+mode: queued
+max: 10

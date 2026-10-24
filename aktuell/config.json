@@ -23,13 +23,13 @@
     "port": 1883,
     "base_topic": "smart_irrigation",
     "commands_enabled": true,
-    "enabled": true,
+    "enabled": false,
     "discovery_prefix": "homeassistant",
     "homeassistant_discovery": true,
     "publish_interval_seconds": 60,
-    "host": "fuck_you",
-    "password": "ichundich102",
-    "username": "mqtt_esp32",
+    "host": "",
+    "password": "",
+    "username": "",
     "command_poll_interval_ms": 500
   },
   "wifi": {
@@ -78,5 +78,20 @@
     "branch": "main",
     "base_path": "src",
     "github_repo": "JannWdl/ESP32-Bodenfeuchtigkeit-HA"
+  },
+  "environment": {
+    "enabled": true,
+    "type": "DHT11",
+    "pin": 33,
+    "read_interval_seconds": 20
+  },
+  "water_level": {
+    "enabled": false,
+    "type": "HC-SR04",
+    "trigger_pin": 25,
+    "echo_pin": 26,
+    "empty_distance_cm": 30,
+    "full_distance_cm": 5,
+    "read_interval_seconds": 10
   }
 }
