@@ -1,4 +1,4 @@
-# Interaktiv festgelegter Umfang — 2. Oktober 2026
+# V4-Funktionsübersicht
 
 | Bereich | Entscheidung |
 |---|---|

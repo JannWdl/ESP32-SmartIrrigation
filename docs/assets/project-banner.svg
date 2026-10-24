@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="440" viewBox="0 0 1280 440" role="img" aria-labelledby="title desc">
+  <title id="title">Smart Irrigation</title>
+  <desc id="desc">Lokale Pflanzenbewässerung mit ESP32. Zwei Pflanzen, ein gemeinsamer Tank und eine lokale Steuerung.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#102d25"/><stop offset="1" stop-color="#285a45"/></linearGradient>
+    <linearGradient id="water" x2="0" y2="1"><stop stop-color="#9fd9c8"/><stop offset="1" stop-color="#6bb8a8"/></linearGradient>
+  </defs>
+  <rect width="1280" height="440" rx="28" fill="url(#bg)"/>
+  <circle cx="1165" cy="30" r="260" fill="#fff" opacity=".025"/>
+  <circle cx="1150" cy="450" r="340" fill="#fff" opacity=".025"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <rect x="60" y="58" width="214" height="32" rx="16" fill="#d6edb7"/>
+    <text x="167" y="79" text-anchor="middle" font-size="13" font-weight="700" letter-spacing="2" fill="#163c2c">ESP32 · MICROPYTHON</text>
+    <text x="58" y="177" fill="#f5f8ed" font-size="66" font-weight="700" letter-spacing="-2">Smart Irrigation</text>
+    <text x="62" y="225" fill="#c6dacb" font-size="24">Pflanzen versorgen. Wasser im Blick.</text>
+    <text x="62" y="260" fill="#c6dacb" font-size="24">Lokal gesteuert.</text>
+    <path d="M62 304H610" stroke="#8bb69c" opacity=".35"/>
+    <text x="62" y="346" fill="#e6f1dc" font-size="16" letter-spacing="1">WEBOBERFLÄCHE   /   TANKÜBERWACHUNG   /   MQTT</text>
+    <text x="62" y="383" fill="#a7c7b0" font-size="14">Dein Zuhause. Deine Daten. Deine Pflanzen.</text>
+  </g>
+  <g fill="none" stroke="#8cb7a1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M821 270v58h112v-42m0 42h155v-42" stroke-dasharray="5 8"/>
+    <rect x="766" y="131" width="112" height="143" rx="19"/>
+  </g>
+  <path d="M772 198q23-10 49 0t51 0v57q0 13-13 13h-74q-13 0-13-13z" fill="url(#water)"/>
+  <path d="M822 152c-4 7-14 16-14 24a14 14 0 0 0 28 0c0-8-10-17-14-24z" fill="#a4decb"/>
+  <g fill="#d9b792">
+    <path d="M902 239h66l-9 50h-48z"/><path d="M1055 239h66l-9 50h-48z"/>
+  </g>
+  <g stroke="#bbdc99" stroke-width="4" stroke-linecap="round" fill="none"><path d="M935 239v-82m153 82v-101"/></g>
+  <g fill="#bbdc99">
+    <path d="M935 203c-38 1-49-17-46-38 31 1 47 13 46 38z"/>
+    <path d="M935 179c1-28 19-43 42-40 0 26-15 42-42 40z"/>
+    <path d="M1088 191c-32-1-46-16-43-38 29-1 44 13 43 38z"/>
+    <path d="M1088 165c1-27 16-42 39-42 2 26-12 43-39 42z"/>
+  </g>
+  <rect x="970" y="350" width="92" height="42" rx="10" fill="#d6edb7"/>
+  <path d="M1016 350v-22" stroke="#8cb7a1" stroke-width="3"/>
+  <text x="1016" y="376" fill="#163c2c" font-family="Segoe UI,Arial,sans-serif" font-size="16" text-anchor="middle" font-weight="700">ESP32</text>
+</svg>
