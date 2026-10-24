@@ -1,9 +1,11 @@
-# Smart Irrigation 4 — eigenständiger Neubau
+# Smart Irrigation 4 · technische Dokumentation
+
+[Projektstartseite](../README.md) · [Erste Schritte](../docs/GETTING_STARTED.md) · [Home Assistant](../docs/HOME_ASSISTANT_V4.md)
 
 **Version 4.0.2:** Steuerung und Updatepakete am PC geprüft. Weboberfläche, HTTP-Optimierungen und WLAN/MQTT-Anbindung wurden mit der zugrunde liegenden 4.0.1-Anwendung auf einem ESP32 getestet. Die zusammengeführte 4.0.2-Ausgabe einschließlich USB-Migrationswerkzeug wurde nicht erneut auf das Gerät übertragen.
-Die bisherige Version bleibt unter `aktuell/` erhalten. V4 startet mit einer neuen Konfiguration.
+Die bisherige V3 bleibt unter `aktuell/` erhalten. Eine V4-Neuinstallation beginnt mit neuen Einstellungen; das USB-Anwendungsupdate erhält bestehende V4-Einstellungen.
 
-Vereinbart: MicroPython, zwei kapazitive analoge Bodensensoren, zwei 5-V-Pumpen an Relais,
+Die Referenzkonfiguration verwendet MicroPython, zwei kapazitive analoge Bodensensoren, zwei 5-V-Pumpen an Relais,
 ein gemeinsamer Tank mit HC-SR04, vollständige lokale Weboberfläche, optionale MQTT-Anbindung.
 Board anhand des Produktbildes: diymore ESP32-NodeMCU / ESP-WROOM-32, USB-C, CH340.
 Relais laut Produktbild: AYWHP 3-V-Einkanalmodule mit High-Level-Trigger.

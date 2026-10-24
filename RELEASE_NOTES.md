@@ -1,111 +1,29 @@
-# Release Notes v3.9.0
+# Release Notes · V4.0.2
 
-## Schwerpunkt
+Veröffentlicht am 24. Oktober 2026 · [Release und Updatepaket](https://github.com/JannWdl/ESP32-SmartIrrigation/releases/tag/v4.0.2)
 
-Diese Version macht das Projekt GitHub-fertig für den aktuellen Stand mit Home Assistant und Telegram:
+## Was neu ist
 
-- Telegram läuft weiterhin nicht auf dem ESP32.
-- Home Assistant übernimmt Telegram-Befehle.
-- Veralteter Telegram-Parameter `target` wurde durch `chat_id` ersetzt.
-- Status-Meldung nutzt die korrekten MQTT-Discovery-Entity-IDs.
-- Doku, Release Notes und Tutorials wurden ergänzt.
+- V4 ist mit dem bisherigen Hauptstand zusammengeführt. Die V3-Firmware und Beispiele bleiben unter `aktuell/` erhalten.
+- Die Weboberfläche lädt komprimierte, versionierte Dateien und nutzt den Browser-Cache. Einstellungen und Verlauf werden bei Bedarf geladen; in unsichtbaren Tabs pausieren Hintergrundabfragen.
+- WLAN-Energiesparmodus ist deaktiviert. Wiederholte MQTT-Fehler führen bei inaktiven Pumpen zu einer erneuten Netzwerkverbindung.
+- Der Tank lässt sich mit drei Füllstandspunkten kalibrieren. Die Fördermengenkalibrierung akzeptiert bestätigte, vollständig beendete Messläufe.
+- Updatepakete enthalten alle Webdateien. Das USB-Anwendungsupdate erhält bestehende V4-Einstellungen und Wasserbudgets.
 
-## Neu
+## Der richtige Updateweg
 
-### Home Assistant Paket aktualisiert
+| Bisheriger Stand | Vorgehen |
+|---|---|
+| V3 oder neues Gerät | V4 frisch installieren und neu einrichten. |
+| V4.0.0 / V4.0.1 | Einmaliges USB-Anwendungsupdate; das bisherige Neun-Dateien-WLAN-Format unterstützt das neue Paket noch nicht. |
+| Ab V4.0.2 | Vollständiges JSON-Paket über „System & Updates“ einspielen. |
 
-Datei:
+[Schritte und Befehle](docs/GETTING_STARTED.md)
 
-```text
-aktuell/home_assistant/packages/esp_smart_irrigation.yaml
-```
+## Prüfstand
 
-Änderungen:
+44 Python-Tests, Browser-Tests, Syntaxprüfung und Offline-Simulation wurden erfolgreich ausgeführt. Die Web- und Netzwerkoptimierungen wurden mit der zugrunde liegenden V4.0.1 auf einem ESP32 geprüft. Das vollständige V4.0.2-Paket und der USB-Migrationsweg wurden noch nicht erneut auf Hardware durchlaufen.
 
-- `/status` funktioniert mit den aktuellen Entity-IDs.
-- Telegram-Antworten nutzen `chat_id` statt `target`.
-- MQTT-Updateintervall ist über HA steuerbar.
-- Scripts für Pumpe, Auto, Stop, Discovery und MQTT-Intervalle enthalten.
+## Frühere Versionen
 
-### Telegram Tutorial
-
-Neu:
-
-```text
-docs/TELEGRAM_TUTORIAL.md
-```
-
-Enthält:
-
-- BotFather-Einrichtung
-- Home Assistant Telegram Bot Setup
-- Befehle
-- Autovervollständigung per `/setcommands`
-- Fehlerbehebung
-
-### Home Assistant Tutorial
-
-Neu:
-
-```text
-docs/HOME_ASSISTANT_SETUP.md
-```
-
-Enthält:
-
-- MQTT Setup
-- Package Installation
-- erwartete Entity-IDs
-- MQTT-Direkttests
-- Hinweise zu doppelten Automationen
-
-### Architektur-Doku
-
-Neu:
-
-```text
-docs/ARCHITECTURE.md
-```
-
-Erklärt, warum Telegram nicht auf dem ESP32 läuft und warum MQTT die stabile Lösung ist.
-
-## Geändert
-
-- `telegram_bot.py`, `telegram_notify.py` und `mqtt_ha.py` wurden aus dem ESP-Projektordner entfernt, damit keine veralteten Telegram-Direct-Dateien mehr im Projekt liegen.
-- `version.json` auf v3.9.0 aktualisiert.
-- `README.md` für GitHub ergänzt.
-- `telegram_bot_example.yaml` verwendet kein altes `notify: platform: telegram` mehr.
-
-## MQTT Commands
-
-```text
-smart_irrigation/channel/0/command/pump        ON | OFF | RUN:5 | RUN:10
-smart_irrigation/channel/0/command/auto        ON | OFF
-smart_irrigation/system/command/stop           STOP
-smart_irrigation/system/command/discovery      DISCOVERY
-smart_irrigation/system/command/mqtt_interval  5..3600
-```
-
-## Update-Hinweise
-
-1. ESP32 aktualisieren:
-
-```powershell
-python install.py COM8 --skip-flash
-```
-
-2. Home Assistant Paket neu kopieren:
-
-```text
-aktuell/home_assistant/packages/esp_smart_irrigation.yaml
-→ /config/packages/esp_smart_irrigation.yaml
-```
-
-3. Alte doppelte Telegram-Automationen deaktivieren oder löschen.
-4. Home Assistant neu starten.
-5. Telegram mit `/status` testen.
-
-## Bekannte Hinweise
-
-- Wenn `/status` `unknown` zeigt, weichen deine Entity-IDs ab. Suche in `Entwicklerwerkzeuge → Zustände` nach `smart_irrigation`.
-- Wenn HA eine Telegram-Migration meldet, suche nach `target:` in Automationen/Scripts. Bei `telegram_bot.send_message` muss daraus `chat_id:` werden.
+[V3.9-Release Notes](docs/legacy/RELEASE_NOTES_3.9.md) · [Gesamtes Changelog](CHANGELOG.md)

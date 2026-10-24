@@ -1,3 +1,5 @@
+> **V3-Dokumentation.** Für die aktuelle V4 bitte [MQTT Discovery für Home Assistant](HOME_ASSISTANT_V4.md) verwenden.
+
 # Home Assistant Setup
 
 ## 1. MQTT einrichten

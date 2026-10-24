@@ -1,3 +1,5 @@
+> **V3-Dokumentation.** Für die aktuelle V4 bitte [MQTT Discovery für Home Assistant](docs/HOME_ASSISTANT_V4.md) verwenden.
+
 # ESP Smart Irrigation Custom Integration / HACS-Vorlage
 
 Diese Vorlage ist für Home Assistant gedacht und sendet einfache MQTT-Kommandos an den ESP32.

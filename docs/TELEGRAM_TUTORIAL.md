@@ -1,3 +1,5 @@
+> **V3-Dokumentation.** Für die aktuelle V4 bitte [MQTT Discovery für Home Assistant](HOME_ASSISTANT_V4.md) verwenden.
+
 # Telegram Tutorial für ESP Smart Irrigation
 
 Telegram läuft ausschließlich in Home Assistant. Der ESP32 bekommt keine Telegram-Token und macht kein HTTPS/TLS.
