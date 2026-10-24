@@ -35,7 +35,7 @@ class Application:
             self.controller.state['blocked']=True
             self.controller.event('error','Konfiguration ungueltig: neu einrichten')
         self.wlan=network.WLAN(network.STA_IF); self.ap=network.WLAN(network.AP_IF)
-        self.control_healthy=False
+        self.control_healthy=False; self.network_recovery_requested=False
         self.history=[]; self.web=Web(self); self.updater=Updater(root,self.controller)
         import binascii
         self.uid=binascii.hexlify(machine.unique_id()).decode()
@@ -120,9 +120,25 @@ class Application:
 
     async def wifi(self):
         self.wlan.active(True)
+        try: self.wlan.config(pm=network.WLAN.PM_NONE)
+        except (AttributeError,ValueError): pass
         attempted=-30000
         while True:
             now=self.clock.now()
+            if self.network_recovery_requested and not self.controller.active:
+                self.network_recovery_requested=False
+                previous_maintenance=self.controller.maintenance
+                self.controller.maintenance=True
+                self.web.server.close()
+                self.wlan.disconnect(); self.wlan.active(False)
+                await asyncio.sleep_ms(500)
+                self.wlan.active(True)
+                try: self.wlan.config(pm=network.WLAN.PM_NONE)
+                except (AttributeError,ValueError): pass
+                await self.web.start()
+                self.controller.maintenance=previous_maintenance
+                attempted=now-30000
+                print('WLAN_RECOVERY: restarted idle network after MQTT failures')
             if self.wlan.isconnected():
                 if self.ap.active(): self.ap.active(False)
             elif not self.controller.active and now-attempted>=30000:

@@ -74,6 +74,21 @@ class UpdateTests(unittest.TestCase):
         self.assertTrue(self.c.state['blocked']); self.assertTrue(self.c.maintenance)
     def test_path_traversal_rejected(self):
         with self.assertRaises(ValueError): self.u.begin({'version':'../../oops','files':self.files})
+    def test_next_ui_asset_hashes_are_accepted(self):
+        future=[]
+        for item in self.files:
+            item=dict(item)
+            if item['name'].startswith('ui.'):
+                parts=item['name'].split('.')
+                parts[1]='111111111111' if '.css' in item['name'] else '222222222222'
+                item['name']='.'.join(parts)
+            future.append(item)
+        self.assertTrue(self.u.begin({'version':'4.0.3','files':future})['ok'])
+    def test_asset_path_traversal_is_rejected(self):
+        files=[dict(item) for item in self.files]
+        item=next(item for item in files if item['name'].endswith('.css'))
+        item['name']='../escape.css'
+        with self.assertRaises(ValueError):self.u.begin({'version':'4.0.2','files':files})
     def test_bad_hash_cannot_activate_release(self):
         self.u.begin({'version':'4.0.0','files':self.files}); self.fill()
         with open(self.u.stage+'/runtime.py','wb') as f: f.write(b'bad')

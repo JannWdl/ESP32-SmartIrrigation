@@ -54,7 +54,12 @@ async def main():
                 if (not cfg.get("safety", {}).get("mqtt_publish_while_pump_running", False)) and irrigation.any_running():
                     pass
                 else:
-                    mqtt.publish_status(hwman.status(), irrigation.status())
+                    mqtt.publish_status(
+                        hwman.status(),
+                        irrigation.status(),
+                        environment=hwman.environment_status(),
+                        water_level=hwman.water_level_status()
+                    )
 
         except OSError as exc:
             msg = str(exc)

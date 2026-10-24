@@ -1,6 +1,6 @@
 # Smart Irrigation 4 — eigenständiger Neubau
 
-**Entwurfsstand: Steuerung am PC getestet, noch nicht auf dem tatsächlichen ESP32 geprüft.**
+**Version 4.0.2:** Steuerung und Updatepakete am PC geprüft. Weboberfläche, HTTP-Optimierungen und WLAN/MQTT-Anbindung wurden mit der zugrunde liegenden 4.0.1-Anwendung auf einem ESP32 getestet. Die zusammengeführte 4.0.2-Ausgabe einschließlich USB-Migrationswerkzeug wurde nicht erneut auf das Gerät übertragen.
 Die bisherige Version bleibt unter `aktuell/` erhalten. V4 startet mit einer neuen Konfiguration.
 
 Vereinbart: MicroPython, zwei kapazitive analoge Bodensensoren, zwei 5-V-Pumpen an Relais,
@@ -41,10 +41,13 @@ Relais-Modulversorgung und Bodensensor-Kompatibilität vor Anschluss bestätigen
 ## Vorschau und Tests
 
 `preview.html` im Browser öffnen: **Beispieldaten, keine echte Pumpensteuerung**.
-Die Oberfläche auf dem ESP entspricht `firmware/index.html`.
+Die bearbeitbare Oberfläche liegt in `ui/index.html`. `tools/build_assets.py` erzeugt daraus `firmware/index.html`, versionierte CSS-/JavaScript-Dateien, gzip-Dateien und die eigenständige Demo `preview.html`.
 
 ```bash
+python3 rebuild/tools/build_assets.py
 python3 -m unittest discover -s rebuild/tests -v
+npm ci --prefix rebuild --ignore-scripts
+npm test --prefix rebuild
 python3 rebuild/tools/simulate.py
 python3 rebuild/tools/make_bundle.py
 ```
@@ -87,7 +90,7 @@ keine zusätzlichen Wassermengen frei; kleine verlorene Zeitintervalle verzöger
 
 ## WLAN-Updates
 
-Mit `make_bundle.py` ein vollständiges Paket erzeugen und unter „System & Updates“ hochladen.
+Mit `make_bundle.py` das vollständige Paket `smart-irrigation-4.0.2.json` erzeugen und unter „System & Updates“ hochladen.
 Die Steuerung wird dabei gesperrt. Dateien landen in einem neuen Releaseverzeichnis; Name,
 Größe und SHA-256 werden geprüft. Erst danach wird der Release-Zeiger atomar per Zweitslot gespeichert.
 Ein fehlgeschlagener Start führt beim nächsten Boot zur vorherigen Anwendung zurück.
@@ -103,3 +106,46 @@ HC-SR04-Pegelwandlung und tatsächliche Messabstände, Pumpenfördermengen, Netz
 WLAN-Wechsel, MQTT-Reconnect, Flashgröße und Update-Rollback. Details: `docs/HARDWARE.md`.
 Die softwareseitige Abschaltung ist kooperativ, mit begrenzten Netzwerk-Wartezeiten und Watchdog;
 sie ersetzt keine elektrische Absicherung oder garantierte Hardwareabschaltung.
+
+
+## Bestehende V4-Einstellungen behalten
+
+Die bisherigen 4.0.0/4.0.1-Updater erwarten genau neun Textdateien. Ein Paket mit getrennten,
+komprimierten Webdateien darf dort nicht direkt eingespielt werden. Für den einmaligen Wechsel
+auf 4.0.2 gibt es einen USB-Anwendungsupdatepfad:
+
+```bash
+python -m pip install mpremote
+python rebuild/tools/app_update.py COM8 --pump-power-disconnected
+```
+
+Vorher die Pumpenversorgung physisch trennen. Das Werkzeug prüft die vorhandenen Release-Zeiger,
+sichert verfügbare Konfiguration, Budgets und Startdateien unter `rebuild/usb-backup/`, überträgt
+alle Anwendungsdateien in ein neues Release und vergleicht SHA-256-Prüfsummen. Konfiguration,
+Wasserbudgets und Bootstrap bleiben erhalten. Der bestehende Start-Rollback bleibt aktiv.
+Diese Sicherungen enthalten private Einstellungen und werden von Git ausgeschlossen.
+Die USB-Migration wurde am PC geprüft; ein realer Migrationsdurchlauf mit diesem Werkzeug steht aus.
+Ab 4.0.2 enthalten die WLAN-Pakete alle Webdateien; binäre gzip-Dateien werden im Paket als Base64
+transportiert und im Browser vor dem Upload dekodiert. Künftige Asset-Prüfsummen dürfen wechseln.
+`tools/install.py` bleibt die ausdrücklich frische Installation mit neuen Einstellungen.
+
+## Webleistung und Verbindungsstabilität
+
+- Vorab komprimierte Webdateien, langfristiger Browser-Cache für versionierte CSS-/JavaScript-Dateien
+  und ETag-Prüfung der Startseite. Der ESP komprimiert keine Dateien während der Anfrage.
+- Kompakte Übersicht statt vollständiger Einstellungen beim Öffnen. Einstellungen und Verlauf
+  werden bei Bedarf geladen. Hintergrundabfragen pausieren bei unsichtbarer Seite.
+- Status im Leerlauf alle fünf statt drei Sekunden; während einer Pumpenaktivität häufiger.
+  Ereignisverlauf und Diagrammdaten werden im sichtbaren Verlauf höchstens alle 15 Sekunden geladen.
+- Wiederverwendbarer 1-KB-Dateipuffer, kompakte JSON-Ausgabe und begrenzte Antwortgrößen.
+- WLAN-Energiesparmodus aus; nach wiederholten MQTT-Fehlern Wiederverbindung bei inaktiver Pumpe.
+  Während der Netzwerkumschaltung verhindert der Wartungszustand neue Pumpenstarts.
+- Tankkalibrierung mit Messpunkten für leer/halbvoll/voll und optionaler Literangabe.
+  Fördermengenkalibrierung lässt nur bestätigte, vollständig beendete Messläufe übernehmen.
+
+In einer Messung der HTTP-Datenabrufe inklusive erster Statusanzeige: bisher etwa 5,4 s,
+mit optimierten Dateien etwa 3,5 s, mit gefülltem Browser-Cache etwa 2,0 s. Beim ersten Öffnen
+wurden rund 62 % weniger Nutzdaten übertragen. Das sind einzelne Messungen im lokalen WLAN;
+parallele Browserabfragen und Funkbedingungen beeinflussen die Werte. Die tatsächliche
+Bildschirmdarstellung wurde zusätzlich im Browser geprüft, aber nicht zeitlich vermessen.
+Die Weboptimierung verändert keine Pumpenlimits oder Tank-Schutzgrenzen.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.0.2 – 24.10.2026
+
+- V4 mit dem bisherigen Hauptstand zusammengeführt; V3 unter `aktuell/` einschließlich optionaler DHT11-/HC-SR04-Erweiterungen erhalten.
+- Optimierte Weboberfläche mit gzip, versionierten Browser-Dateien, Cache-Prüfung und bedarfsgesteuerten Abfragen.
+- WLAN-Energiesparmodus deaktiviert und sichere Wiederverbindung nach wiederholten MQTT-Fehlern.
+- Drei-Punkt-Tankkalibrierung und bestätigte Fördermengen-Messläufe.
+- Vollständige Updatepakete einschließlich binärer Webdateien und USB-Anwendungsupdate mit Erhalt der Einstellungen.
+- Zusätzliche HTTP-, Paket- und Browser-Prüfungen in der CI; keine lokalen Zugangsdaten veröffentlicht.
+
 ## v3.9.0
 
 - GitHub-README ergänzt.

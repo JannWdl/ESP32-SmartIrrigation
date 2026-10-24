@@ -2,9 +2,12 @@
 import os
 import json
 from persistence import digest
+from web_v4 import STATIC_FILES
 
-FILES=('settings.py','persistence.py','controller.py','hardware_v4.py','runtime.py',
-       'web_v4.py','mqtt_v4.py','updater.py','index.html')
+CORE_FILES=('settings.py','persistence.py','controller.py','hardware_v4.py','runtime.py',
+            'web_v4.py','mqtt_v4.py','updater.py','index.html')
+FILES=CORE_FILES+tuple(name for info in STATIC_FILES.values()
+    for name in (info[0],info[0]+'.gz') if name not in CORE_FILES)
 
 class Updater:
     def __init__(self,root,controller):
@@ -18,7 +21,19 @@ class Updater:
         if not isinstance(version,str) or not version or len(version)>24 or any(c not in '0123456789.-abcdefghijklmnopqrstuvwxyz' for c in version):
             raise ValueError('Version ungueltig')
         files=manifest.get('files',[])
-        if len(files)!=len(FILES) or set(f.get('name') for f in files)!=set(FILES):
+        if not isinstance(files,list) or any(not isinstance(f,dict) for f in files):
+            raise ValueError('Manifest ungueltig')
+        names=[f.get('name') for f in files]
+        if any(not isinstance(n,str) for n in names):raise ValueError('Manifest ungueltig')
+        extras=set(names)-set(CORE_FILES)
+        plain=[n for n in extras if n.endswith(('.js','.css'))]
+        valid_names=all(len(n.split('.'))==3 and n.split('.')[0]=='ui'
+            and len(n.split('.')[1])==12 and all(c in '0123456789abcdef' for c in n.split('.')[1])
+            for n in plain)
+        expected=set(plain+[n+'.gz' for n in plain]+['index.html.gz'])
+        if (len(files)!=len(FILES) or len(set(names))!=len(names) or not set(CORE_FILES)<=set(names)
+            or len(plain)!=2 or not any(n.endswith('.js') for n in plain)
+            or not any(n.endswith('.css') for n in plain) or not valid_names or extras!=expected):
             raise ValueError('Vollstaendiges Updatepaket erforderlich')
         total=0
         for f in files:

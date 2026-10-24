@@ -147,6 +147,8 @@ class WebServer:
             "version": self.cfg.get("system", {}).get("version", ""),
             "heap": self.heap(),
             "hardware": self.hwman.status(),
+            "environment": self.hwman.environment_status(),
+            "water_level": self.hwman.water_level_status(),
             "irrigation": self.irrigation.status(),
             "mqtt": self.mqtt.status() if self.mqtt else {"enabled": False},
             "network_pause": self.irrigation.network_pause_active() if hasattr(self.irrigation, "network_pause_active") else False
@@ -182,8 +184,9 @@ class WebServer:
             save_config(self.cfg)
             self.send(conn, '{"ok":true,"message":"Setup gespeichert"}')
         elif method == "POST" and path == "/api/config":
-            for key in ("wifi", "mqtt", "ota", "system", "safety"):
+            for key in ("wifi", "mqtt", "ota", "system", "safety", "environment", "water_level"):
                 if key in data:
+                    self.cfg.setdefault(key, {})
                     self.cfg[key].update(data[key])
             if "channels" in data:
                 self.cfg["channels"] = data["channels"]
@@ -224,11 +227,11 @@ class WebServer:
             res = self.mqtt.test() if self.mqtt else {"ok": False, "error": "MQTT fehlt"}
             self.send(conn, json.dumps(res))
         elif method == "POST" and path == "/api/mqtt/discovery":
-            res = self.mqtt.discovery(self.hwman.status()) if self.mqtt else False
+            res = self.mqtt.discovery(self.hwman.status(), self.hwman.environment_status(), self.hwman.water_level_status()) if self.mqtt else False
             err = getattr(self.mqtt, "last_error", "") if self.mqtt else "MQTT fehlt"
             self.send(conn, json.dumps({"ok": bool(res), "error": err, "mqtt": self.mqtt.status() if self.mqtt else {}}))
         elif method == "POST" and path == "/api/mqtt/publish-now":
-            res = self.mqtt.publish_status(self.hwman.status(), self.irrigation.status(), force=True) if self.mqtt else False
+            res = self.mqtt.publish_status(self.hwman.status(), self.irrigation.status(), force=True, environment=self.hwman.environment_status(), water_level=self.hwman.water_level_status()) if self.mqtt else False
             err = getattr(self.mqtt, "last_error", "") if self.mqtt else "MQTT fehlt"
             self.send(conn, json.dumps({"ok": bool(res), "error": err, "mqtt": self.mqtt.status() if self.mqtt else {}}))
         elif method == "POST" and path == "/api/ota/check":

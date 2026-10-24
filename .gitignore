@@ -33,3 +33,5 @@ rebuild/config.a
 rebuild/config.b
 rebuild/state.a
 rebuild/state.b
+node_modules/
+rebuild/usb-backup/

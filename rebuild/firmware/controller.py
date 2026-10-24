@@ -36,11 +36,19 @@ class Tank:
             self.safe = False; self.good = 0; self.reason = 'messung_veraltet'
         return self.safe
 
-    def status(self):
+    def status(self, now=None):
         d = self.distance; t = self.cfg
         percent = None; liters = None
         if d is not None and ready_tank(t):
             percent = round(max(0,min(100,(t['empty_cm']-d)*100/(t['empty_cm']-t['full_cm']))),1)
+            percentages = t.get('percent_points', [])
+            if percentages:
+                if d <= percentages[0][0]: percent = 100
+                elif d >= percentages[-1][0]: percent = 0
+                else:
+                    for a,b in zip(percentages,percentages[1:]):
+                        if a[0] <= d <= b[0]:
+                            percent = round(a[1]+(d-a[0])*(b[1]-a[1])/(b[0]-a[0]),1); break
             pts = t.get('points', [])
             if len(pts) >= 2:
                 if d <= pts[0][0]: liters = pts[0][1]
@@ -50,6 +58,7 @@ class Tank:
                         if a[0] <= d <= b[0]:
                             liters = a[1] + (d-a[0])*(b[1]-a[1])/(b[0]-a[0]); break
         return dict(safe=self.safe, reason=self.reason, distance_cm=d, percent=percent,
+                    sample_age_ms=None if now is None or self.last_ms is None else max(0,now-self.last_ms),
                     liters=None if liters is None else round(liters,2))
 
 class Controller:
@@ -228,7 +237,7 @@ class Controller:
 
     def status(self):
         return dict(blocked=self.state['blocked'],storage_error=self.storage_error,
-            active=self.active,tank=self.tank.status(),used_total_ml=sum(self.state['used'].values()),
+            active=self.active,tank=self.tank.status(self.now),used_total_ml=sum(self.state['used'].values()),
             budget_hours_remaining=round((86400000-self.state['elapsed_ms'])/3600000,2),
             channels=[dict(id=ch['id'],name=ch['name'],auto=ch['auto'],
                 moisture=self.runtime[ch['id']]['moisture'],raw=self.runtime[ch['id']]['raw'],

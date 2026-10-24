@@ -1,7 +1,7 @@
 """Validated configuration. New installs never energize an unknown relay."""
 import json
 
-VERSION = '4.0.0'
+VERSION = '4.0.2'
 
 def defaults():
     channel = lambda i: dict(id=i, name='Pflanze %d' % (i + 1), enabled=True,
@@ -14,7 +14,7 @@ def defaults():
         mqtt=dict(enabled=False, host='', port=1883, username='', password='',
                   topic='smart_irrigation_v4', interval=60),
         tank=dict(trigger_pin=18, echo_pin=19, full_cm=None, empty_cm=None,
-                  stop_cm=None, resume_cm=None, points=[]),
+                  stop_cm=None, resume_cm=None, points=[], percent_points=[]),
         safety=dict(boot_pause_seconds=60, max_total_day_ml=400),
         channels=[channel(0), channel(1)])
 
@@ -95,6 +95,17 @@ def validate(cfg):
         if prev and (p[0] <= prev[0] or p[1] >= prev[1]):
             raise ValueError('Tankpunkte: Abstand steigend, Liter fallend')
         prev = p
+    percent = tank.get('percent_points', [])
+    if not isinstance(percent, list) or len(percent) not in (0, 3):
+        raise ValueError('Tank: drei Prozent-Kalibrierpunkte erforderlich')
+    for i, p in enumerate(percent):
+        if not isinstance(p, list) or len(p) != 2:
+            raise ValueError('Tank-Prozentpunkte: [Abstand_cm, Prozent]')
+        number(p[0], 2, 350, 'Tankabstand'); number(p[1], 0, 100, 'Tankprozent')
+        if p[1] != (100, 50, 0)[i] or (i and p[0] <= percent[i-1][0]):
+            raise ValueError('Tankpunkte: voll 100%, halbvoll 50%, leer 0%; Abstand steigend')
+    if percent and (percent[0][0] != tank.get('full_cm') or percent[2][0] != tank.get('empty_cm')):
+        raise ValueError('Tank-Prozentpunkte passen nicht zu voll/leer')
     number(cfg['safety']['boot_pause_seconds'],30,3600,'Startpause')
     number(cfg['safety']['max_total_day_ml'],1,100000,'Gesamtlimit')
     for k in ('ssid','password','ap_password'):

@@ -1,4 +1,4 @@
-> **V4-Neubau (Entwurf):** Die eigenständige Steuerung mit gemeinsamer Tanküberwachung und Einrichtungsassistent liegt unter [rebuild/](rebuild/README.md). Die bisherige Version unter `aktuell/` bleibt erhalten. Noch nicht auf dem tatsächlichen Board geprüft.
+> **Aktueller V4-Stand: 4.0.2.** Die eigenständige Steuerung mit Tanküberwachung, Einrichtungsassistent und optimierter Weboberfläche liegt unter [rebuild/](rebuild/README.md). WLAN/MQTT und Weboptimierungen wurden auf dem ESP geprüft; Hinweise zum Prüfstand und zum Erhalt bestehender Einstellungen stehen dort. Die bisherige V3-Firmware bleibt unter `aktuell/` erhalten.
 
 # ESP32 Smart Irrigation
 
@@ -30,10 +30,15 @@ Aktuelle Standard-Pins:
 ```text
 Pumpe / Relais: GPIO27
 Bodenfeuchtigkeit ADC: GPIO34
+DHT11 Temperatur/Luftfeuchtigkeit: GPIO33
+HC-SR04 Trigger: GPIO25
+HC-SR04 Echo: GPIO26
 ```
 
 Wichtige Regeln:
 
+- HC-SR04 Echo liefert 5 V. Echo deshalb nur ueber Spannungsteiler oder Level-Shifter an GPIO26 anschliessen.
+- DHT11 Datenleitung an GPIO33 anschliessen; je nach Modul ist ein Pull-up bereits auf der Platine.
 - ESP32 versorgt die Pumpe **niemals direkt**.
 - Pumpe nicht über Breadboard-Stromschienen laufen lassen.
 - Alle GNDs müssen gemeinsam verbunden sein.
@@ -105,6 +110,10 @@ Tutorial inklusive BotFather-Autovervollständigung: [docs/TELEGRAM_TUTORIAL.md]
 ```text
 smart_irrigation/channel/0/command/pump        ON | OFF | RUN:5 | RUN:10
 smart_irrigation/channel/0/command/auto        ON | OFF
+smart_irrigation/environment/temperature       Temperatur in Grad Celsius
+smart_irrigation/environment/humidity          Luftfeuchtigkeit in Prozent
+smart_irrigation/water_level/percent           Wasserstand in Prozent
+smart_irrigation/water_level/distance_cm       Abstand Sensor zu Wasser in cm
 smart_irrigation/system/command/stop           STOP
 smart_irrigation/system/command/discovery      DISCOVERY
 smart_irrigation/system/command/mqtt_interval  5..3600

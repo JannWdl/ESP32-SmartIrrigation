@@ -34,6 +34,21 @@ DEFAULT_CONFIG = {
             "total_waterings": 0
         }
     ],
+    "environment": {
+        "enabled": True,
+        "type": "DHT11",
+        "pin": 33,
+        "read_interval_seconds": 20
+    },
+    "water_level": {
+        "enabled": False,
+        "type": "HC-SR04",
+        "trigger_pin": 25,
+        "echo_pin": 26,
+        "empty_distance_cm": 30,
+        "full_distance_cm": 5,
+        "read_interval_seconds": 10
+    },
     "mqtt": {
         "enabled": False,
         "host": "",
@@ -112,6 +127,21 @@ def _migrate(cfg):
 
     # Telegram Direct läuft absichtlich nicht mehr auf dem ESP32.
     # Steuerung/Benachrichtigung soll über Home Assistant + MQTT erfolgen.
+    cfg.setdefault("environment", {})
+    cfg["environment"].setdefault("enabled", True)
+    cfg["environment"].setdefault("type", "DHT11")
+    cfg["environment"].setdefault("pin", 33)
+    cfg["environment"].setdefault("read_interval_seconds", 20)
+
+    cfg.setdefault("water_level", {})
+    cfg["water_level"].setdefault("enabled", False)
+    cfg["water_level"].setdefault("type", "HC-SR04")
+    cfg["water_level"].setdefault("trigger_pin", 25)
+    cfg["water_level"].setdefault("echo_pin", 26)
+    cfg["water_level"].setdefault("empty_distance_cm", 30)
+    cfg["water_level"].setdefault("full_distance_cm", 5)
+    cfg["water_level"].setdefault("read_interval_seconds", 10)
+
     cfg.setdefault("telegram", {})
     cfg["telegram"] = {
         "mode": "home_assistant_mqtt_proxy",

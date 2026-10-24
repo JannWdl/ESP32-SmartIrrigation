@@ -1,5 +1,6 @@
 """Small async MQTT 3.1.1 client. Commands are QoS 0 and never retained."""
 import json
+from settings import VERSION
 try: import asyncio
 except ImportError: import uasyncio as asyncio
 
@@ -19,7 +20,7 @@ class MQTT:
     def __init__(self,app,uid):
         self.app=app; self.cfg=app.cfg['mqtt']; self.uid=uid
         self.reader=None; self.writer=None; self.connected=False; self.error=''
-        self.lock=asyncio.Lock(); self.last_event=None
+        self.lock=asyncio.Lock(); self.last_event=None; self.failures=0
 
     async def send(self,data):
         async with self.lock:
@@ -44,7 +45,7 @@ class MQTT:
 
     async def discovery(self):
         base=self.cfg['topic']; ident='irrigation_'+self.uid
-        device=dict(identifiers=[ident],name=self.app.cfg['name'],manufacturer='JannWdl',model='Smart Irrigation 4',sw_version='4.0.0')
+        device=dict(identifiers=[ident],name=self.app.cfg['name'],manufacturer='JannWdl',model='Smart Irrigation 4',sw_version=VERSION)
         async def entity(domain,name,key,template=None,extra=None):
             data=dict(name=name,unique_id=ident+'_'+key,device=device,
                 availability_topic=base+'/availability',payload_available='online',payload_not_available='offline')
@@ -125,14 +126,16 @@ class MQTT:
                 kind,body=await self.frame()
                 if kind!=0x20 or body!=b'\x00\x00': raise ValueError('MQTT Anmeldung fehlgeschlagen')
                 await self.send(packet(0x82,b'\x00\x01'+utf(self.cfg['topic']+'/command')+b'\x00'+utf('homeassistant/status')+b'\x00'))
-                self.connected=True; self.error=''
+                self.connected=True; self.error=''; self.failures=0
                 await self.publish(self.cfg['topic']+'/availability','online',True)
                 await self.discovery()
                 receiver=asyncio.create_task(self.receive()); transmitter=asyncio.create_task(self.transmit())
                 # Both must remain alive; propagate failures through await.
                 await asyncio.gather(receiver,transmitter)
             except Exception as exc:
-                self.error=str(exc)
+                self.error=str(exc); self.failures+=1
+                print('MQTT_ERROR',repr(exc))
+                if self.failures>=2: self.app.network_recovery_requested=True
             finally:
                 self.connected=False
                 for task in (receiver,transmitter):

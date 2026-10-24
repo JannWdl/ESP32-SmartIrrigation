@@ -4,6 +4,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from build_assets import build
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -14,6 +15,9 @@ def main():
     args=p.parse_args()
     if not args.pump_power_disconnected:
         p.error('Zuerst Pumpenversorgung trennen, dann --pump-power-disconnected angeben.')
+    build()
+    sys.path.insert(0,str(ROOT/'firmware'))
+    from updater import FILES
     def remote(*parts,check=True):
         return subprocess.run([sys.executable,'-m','mpremote','connect',args.port,*parts],check=check)
     with tempfile.TemporaryDirectory() as d:
@@ -25,9 +29,9 @@ def main():
                 import shutil
                 shutil.copy2(Path(d)/name,backup/name)
         remote('exec',"import os\nfor p in ('/releases','/releases/factory'):\n try: os.mkdir(p)\n except OSError: pass")
-        for f in sorted((ROOT/'firmware').iterdir()):
-            if f.is_file() and f.suffix in ('.py','.html'):
-                remote('fs','cp',str(f),':/releases/factory/'+f.name)
+        for name in FILES:
+            f=ROOT/'firmware'/name
+            remote('fs','cp',str(f),':/releases/factory/'+name)
         # A fresh install intentionally starts without imported config/state/release pointers.
         remote('exec',"import os\nfor p in ('/config.a','/config.b','/state.a','/state.b','/release.a','/release.b'):\n try: os.remove(p)\n except OSError: pass")
         remote('fs','cp',str(ROOT/'tools'/'bootstrap.py'),':/main.py')
